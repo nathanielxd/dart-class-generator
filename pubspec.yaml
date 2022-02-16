@@ -1,12 +1,11 @@
 name: class_builder
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# homepage: https://www.example.com
+description: A suite of tools that provide generation of dart code such as classes, methods, properties and constructors.
+version: 0.3.0
+homepage: https://github.com/nathanielxd/class-builder
 environment:
   sdk: '>=2.15.0 <3.0.0'
 
 dependencies:
-  path: ^1.8.0
   recase: ^4.0.0
 
 dev_dependencies:

@@ -30,6 +30,7 @@ class ClassCopyWithBuilder extends IBuilder {
       );
     }
 
+    // Add footer.
     add(');');
     
     return super.build();

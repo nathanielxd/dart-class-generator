@@ -69,9 +69,13 @@ class ClassConstructorBuilder extends IBuilder {
       }
       // Handle named constructors.
       else {
-        header.write('()');
+        header.write('(');
+        for (var field in _privateFields) {
+          header.write(field.asConstructorPrivateParam);
+        }
+        header.write(')');
         add(header.toString());
-        add('=> ' + className + '(');
+        add('=> const ' + className + '(');
         for (var field in _classFields) {
           if(field.factoryValue != null) {
             add(tab + field.asNamedConstructorParam);

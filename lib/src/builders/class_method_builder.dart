@@ -5,11 +5,14 @@ class ClassMethodBuilder extends IBuilder {
   final String methodName;
   ClassMethodBuilder(this.methodName);
 
+  final _arguments = <ClassField>[];
   var _return = 'void';
   var _tag = '';
+  bool _isGet = false;
+  bool _isAsync = false;
   var _body = <String>[];
-  final _arguments = <ClassField>[];
   int _lineTabs = 0;
+  var _comments = <String>[];
 
   /// Change the return type of the method. Default is `void`.
   /// 
@@ -28,6 +31,17 @@ class ClassMethodBuilder extends IBuilder {
   void withTag(String value) {
     _tag = value;
   }
+  
+  /// Make the method use the `get` keyword when building. Default is set to false.
+  /// 
+  /// Eg. `..withGet() // String get myMethod {...}`
+  void withGet() {
+    _isGet = true;
+  }
+
+  void withAsync() {
+    _isAsync = true;
+  }
 
   /// Add a new argument field to the method.
   void addArgument(ClassField field) => _arguments.add(field);
@@ -37,6 +51,9 @@ class ClassMethodBuilder extends IBuilder {
 
   /// Change the body code of the method to [value].
   void withBody(String value) => _body = value.split('\n');
+
+  /// Change the doc comment of the method to [value].
+  void withComment(String value) => _comments = value.split('\n');
 
   /// Add a line of code to the body of the method.
   void addLine(String line) => _body.add((tab * _lineTabs) + line);
@@ -54,12 +71,19 @@ class ClassMethodBuilder extends IBuilder {
   @override
   String build() {
 
+    for(var comment in _comments) {
+      add('/// $comment');
+    }
+
     if(_tag.isNotEmpty) {
       add('@$_tag');
     }
     
     final header = StringBuffer()
-      ..write(_return.isNotEmpty ? _return + ' ' : '')
+      ..write(
+        (_return.isNotEmpty ? _return + ' ' : '') 
+        + (_isGet ? 'get ' : '')
+        )
       ..write(methodName);
 
     if(_arguments.isNotEmpty) {
@@ -68,7 +92,13 @@ class ClassMethodBuilder extends IBuilder {
       header.write(')');
     }
     else {
-      header.write('()');
+      if(!_isGet) {
+        header.write('()');
+      }
+    }
+
+    if(_isAsync) {
+      header.write(' async ');
     }
     
     if(_body.isEmpty) {

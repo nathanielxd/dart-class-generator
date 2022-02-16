@@ -1,27 +1,57 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Dart Class Builder
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+A suite of tools that provide generation of dart code such as classes, methods, properties and constructors.
 
 ## Features
 
 TODO: List what your package can do. Maybe include images, gifs, or videos.
 
+- Generate classes, constructors, methods, properties with ease;
+- Quick generation of copyWith methods, serialization (toMap, fromMap) and Equatable;
+- Outputs everything as a simple string which you can then write to a file on your own;
+
+Attention! This does not work with Dart's **build** package. This is a standalone package written in Dart that builds Dart code.
+
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+1. Add the dependency to your pubspec.yaml file
+`class_builder: any`
+
+2. Build your first class
+```dart
+void main() {
+    final builder = ClassBuilder('MyClass');
+    builder
+        ..withExtension('Equatable') // Extend the Equatable class
+        ..withCopyWith() // Build a copyWith method
+        ..addField(ClassField('String', 'name'))
+        ..addField(ClassField('int', 'age'))
+        ..withEquatable(); // Build override equatable props
+
+    final code = builder.build();
+    print(code);
+
+    /** Output:
+
+    class MyClass extends Equatable {
+
+        final String name;
+        final int age;
+
+        MyClass copyWith({
+            String? name,
+            int? age,
+        }) => MyClass(
+            name: name ?? this.name,
+            age: age ?? this.age,
+        );
+
+        @override
+        List<Object?> get props => [name, age];
+    }
+    */
+}
+```
 
 ## Usage
 

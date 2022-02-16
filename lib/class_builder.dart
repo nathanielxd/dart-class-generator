@@ -10,6 +10,7 @@ export 'src/class_builder_exception.dart';
 export 'src/builders/class_constructor_builder.dart';
 export 'src/builders/class_copywith_builder.dart';
 export 'src/builders/class_method_builder.dart';
+export 'src/builders/class_serialization_builder.dart';
 
 export 'src/elements/class_field.dart';
 
