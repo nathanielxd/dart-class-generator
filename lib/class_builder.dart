@@ -1,10 +1,10 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library class_builder;
 
+export 'src/models/variable.dart';
+export 'src/models/field.dart';
+
 export 'src/class_builder_base.dart';
-export 'src/class_builder_interface.dart';
+export 'src/builder_interface.dart';
 export 'src/class_builder_exception.dart';
 
 export 'src/builders/class_constructor_builder.dart';

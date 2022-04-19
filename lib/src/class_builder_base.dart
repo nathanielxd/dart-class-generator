@@ -71,11 +71,11 @@ class ClassBuilder extends IBuilder {
   }
 
   /// Add a new constructor that builds all current fields.
-  void addConstructor(ClassConstructorBuilder constructor) {
+  /*void addConstructor(ClassConstructorBuilder constructor) {
     constructors.add(
-      constructor..addAllClassFields(_fields)
+      constructor..addFields(_fields)
     );
-  }
+  }*/
 
   void addMethod(ClassMethodBuilder methodBuilder) {
     methods.add(methodBuilder);

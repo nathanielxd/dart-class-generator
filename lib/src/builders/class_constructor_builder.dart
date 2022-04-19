@@ -4,95 +4,85 @@ import 'package:class_builder/class_builder.dart';
 class ClassConstructorBuilder extends IBuilder {
 
   final String className;
+
   ClassConstructorBuilder(this.className);
 
-  var _prefix = '';
-  var _name = '';
-  var _super = '';
-  final _classFields = <ClassField>[];
-  final _privateFields = <ClassField>[];
+  var prefix = 'const';
+  var name = '';
+  var superValue = '';
+  var body = '';
+  var fields = <Field>[];
+  var parameters = <Field>[];
 
-  /// Change the prefix of the constructor. Default is an empty prefix.
+  /// Change the prefix of the constructor. Default is `const`.
   /// 
   /// Eg. `..withPrefix('const') // const MyClass();`
-  void withPrefix(String value) {
-    _prefix = value;
-  }
+  void withPrefix(String value) => prefix = value;
 
-  /// Change the name of the constructor. Default is an empty name, therefore building an unnamed constructor.
+  /// Change the name of the constructor. Default is an empty name, therefore is building an unnamed constructor.
   /// 
   /// Eg. `..withName('pure') // MyClass.pure();`
-  void withName(String value) {
-    _name = value;
-  }
+  void withName(String value) => name = value;
 
-  /// Change the super value of the constructor. Default is an empty super, therefore building a default constructor.
+  /// Change the super value of the constructor. Default is an empty value.
   /// 
   /// Eg. `..withSuper('key: key') // MyClass() : super(key: key)`
-  void withSuper(String value) {
-    _super = value;
-  }
+  void withSuper(String value) => superValue = value;
 
-  /// Adds a new field to the constructor.
-  void addClassField(ClassField field) => _classFields.add(field);
+  /// Change the body value of the constructor. Default is an empty value, therefore the
+  /// constructor will have no body.
+  /// 
+  /// Eg. 
+  /// ```
+  /// ..withBody('// something')
+  /// Constructor() {
+  ///   // something
+  /// }
+  /// ```
+  void withBody(String value) => body = value;
 
-  /// Adds multiple fields to the constructor.
-  void addAllClassFields(List<ClassField> fields) => _classFields.addAll(fields);
+  /// Add class fields to the constructor.
+  /// 
+  /// A class field is represented as `this.field`.
+  void addClassFields(List<Field> fields) => this.fields.addAll(fields);
 
-  /// Adds a new private field to the constructor.
-  void addPrivateField(ClassField field) => _privateFields.add(field);
+  /// Add parameter fields to the constructor.
+  /// 
+  /// A parameter field is represented as `Type field`.
+  void addParameters(List<Field> parameters) => this.parameters.addAll(parameters);
 
-  String get endIfSuperIsEmpty => (_super.isEmpty ? ';' : '');
+  String get _prefix => prefix.isNotEmpty ? '$prefix ' : '';
+  String get _name => name.isNotEmpty ? '.$name' : '';
+  String get _super => superValue.isNotEmpty ? ' : super ($superValue)' : '';
+  String get _body => body.isNotEmpty ? ' {\n $tab$body \n}' : '';
+
+  bool get _hasUnnamedFields => fields.any((element) => !element.named);
+  bool get _hasNamedFields => fields.any((element) => element.named);
+
+  String get _unnamedFields => fields
+    .where((field) => !field.named)
+    .map((e) => e.toConstructorParameter())
+    .followedBy(parameters
+      .where((parameter) => !parameter.named)
+      .map((e) => e.toString())
+    )
+    .join(', ');
+
+  String get _namedFields => _hasNamedFields 
+  ? (_hasUnnamedFields ? ', ' : '') + '{\n' + fields
+    .where((field) => field.named)
+    .map((e) => tab + e.toConstructorParameter() + ',')
+    .followedBy(parameters
+      .where((parameter) => parameter.named)
+      .map((e) => tab + e.toString() + ',')
+    )
+    .join('\n')
+    + '\n}'
+  : '';
 
   @override
   String build() {
-    final header = StringBuffer()
-      ..write(_prefix.isNotEmpty ? _prefix + ' ' : '')
-      ..write(className);
-
-    if(_name.isNotEmpty) {
-      header.write('.$_name');
-    }
-
-    if(_classFields.isNotEmpty || _privateFields.isNotEmpty) {
-      // Handle unnamed constructor.
-      if(_name.isEmpty) {
-        header.write('({');
-        add(header.toString());
-        for(var field in _privateFields) {
-          add(tab + field.asConstructorPrivateParam);
-        }
-        for (var field in _classFields) { 
-          add(tab + field.asConstructorParam);
-        }
-        add('})' + endIfSuperIsEmpty);
-      }
-      // Handle named constructors.
-      else {
-        header.write('(');
-        for (var field in _privateFields) {
-          header.write(field.asConstructorPrivateParam);
-        }
-        header.write(')');
-        add(header.toString());
-        add('=> const ' + className + '(');
-        for (var field in _classFields) {
-          if(field.factoryValue != null) {
-            add(tab + field.asNamedConstructorParam);
-          }
-        }
-        add(')' + endIfSuperIsEmpty);
-      }
-    }
-    else {
-      header.write('()' + endIfSuperIsEmpty);
-      add(header.toString());
-    }
-
-    if(_super.isNotEmpty) {
-      add(': super($_super);');
-    }
-
+    add('$_prefix$className$_name($_unnamedFields$_namedFields)$_super$_body;');
     return super.build();
   }
 }
