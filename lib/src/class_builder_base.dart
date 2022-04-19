@@ -1,7 +1,6 @@
 import 'package:class_builder/class_builder.dart';
-import 'package:class_builder/src/builders/class_serialization_builder.dart';
 
-class ClassBuilder extends IBuilder {
+/*class ClassBuilder extends IBuilder {
 
   final String className;
   ClassBuilder(this.className);
@@ -148,4 +147,4 @@ class ClassBuilder extends IBuilder {
 
     return super.build();
   }
-}
+}*/

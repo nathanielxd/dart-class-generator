@@ -3,36 +3,25 @@ import 'package:class_builder/class_builder.dart';
 class ClassCopyWithBuilder extends IBuilder {
 
   final String className;
-  final List<ClassField> fields;
+  final List<Field> fields;
 
-  ClassCopyWithBuilder(this.className, this.fields);
+  ClassCopyWithBuilder(this.className, {
+    required this.fields
+  });
+
+  String get _parameters => fields
+    .map((e) => '\n' + tab + '${e.type}? ${e.identifier}')
+    .join(',');
+
+  String get _fields => fields
+    .map((e) => '\n' + tab + '${e.identifier}: ${e.identifier} ?? this.${e.identifier}')
+    .join(',');
 
   @override
   String build() {
-    // Add header.
-    add(className + ' copyWith({');
-
-    for (var element in fields) { 
-      add(tab + element.type + '? ' + element.identifier + ',');
-    }
-
-    add('}) => $className(');
-
-    for(var element in fields) {
-      add(
-        tab 
-        + element.identifier 
-        + ': '
-        + element.identifier 
-        + ' ?? this.' 
-        + element.identifier
-        + ','
-      );
-    }
-
-    // Add footer.
+    add('$className copyWith({$_parameters');
+    add('}) => $className($_fields');
     add(');');
-    
     return super.build();
   }
 }
