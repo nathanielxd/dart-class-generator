@@ -1,7 +1,7 @@
-name: class_builder
+name: code_generator
 description: A toolkit for dart code generation such as classes, methods, properties and constructors.
 version: 1.0.0
-homepage: https://github.com/nathanielxd/class-builder
+homepage: https://github.com/nathanielxd/dart-code-generator
 environment:
   sdk: '>=2.15.0 <3.0.0'
 

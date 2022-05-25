@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:class_builder/class_builder.dart';
+import 'package:code_generator/code_generator.dart';
 
 void main(List<String> args) {
 

@@ -15,7 +15,7 @@ Attention! This does not work with Dart's **build** package. This is a standalon
 ## Getting started
 
 1. Add the dependency to your pubspec.yaml file
-`class_builder: any`
+`code_generator: any`
 
 2. Build your first class
 ```dart
