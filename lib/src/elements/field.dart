@@ -83,6 +83,22 @@ class Field {
   @override
   String toString() => type + _null + ' ' + identifier + _equalsToValue;
 
+  String get emptyValue {
+    if(type.startsWith('List')) {
+      return '[]';
+    }
+    switch(type) {
+      case 'bool':    return 'false';
+      case 'int':     return '0';
+      case 'double':  return '0';
+      case 'num':     return '0';
+      case 'String':  return "''";
+      default:        return '$type.empty';
+    }
+  }
+
+  String toEmptyParameter() => identifier + ': ' + emptyValue;
+
   /// Get this field as a class property representation.
   /// 
   /// Eg. `final String name;` or `static const String name = 'Mark';`
@@ -126,15 +142,15 @@ class Field {
     if(type.startsWith('Map')) {
       return identifier;
     }
-    if(type.startsWith('List')) {
-      final childType = type.substring(5, type.length - 1);
-      final childEntry = MapEntry('x', childType);
-      final childField = ClassField.fromEntry(childEntry);
 
-      final childToMap = childField.toMap;
-      
-      return _identifier + '.map((${childField.identifier}) => $childToMap).toList()';
+    if(type.startsWith('List')) {
+      final child = Field.fromEntry(
+        MapEntry('x', type.substring(5, type.length - 1))
+      ).toMapParameter();
+
+      return _identifier + '.map(($identifier) => $child).toList()';
     }
+
     switch(type) {
       case 'bool':
       case 'int':
@@ -161,11 +177,10 @@ class Field {
   /// 
   /// Where [value] is usually `map['foo']`.
   String toFromMapParameter(String value) {
-
     if(type.startsWith('List')) {
-      final child = ClassField.fromEntry(
+      final child = Field.fromEntry(
         MapEntry('x', type.substring(5, type.length - 1))
-      ).fromMap('x');
+      ).toFromMapParameter('x');
 
       return "$type.from(map['$identifier']?.map((x) => $child))";
     }

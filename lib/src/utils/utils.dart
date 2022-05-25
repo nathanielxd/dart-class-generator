@@ -1,5 +1,3 @@
-import 'package:class_builder/class_builder.dart';
-
 class Utils {
 
   static String getDefaultValueOf(String type) {

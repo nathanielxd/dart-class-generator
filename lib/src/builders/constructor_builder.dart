@@ -1,18 +1,18 @@
 
 import 'package:class_builder/class_builder.dart';
 
-class ClassConstructorBuilder extends IBuilder {
+class ConstructorBuilder extends IBuilder {
 
   final String className;
 
-  ClassConstructorBuilder(this.className);
+  ConstructorBuilder(this.className);
 
   var prefix = 'const';
   var name = '';
   var superValue = '';
   var body = '';
   var fields = <Field>[];
-  var parameters = <Field>[];
+  var arguments = <Field>[];
 
   /// Change the prefix of the constructor. Default is `const`.
   /// 
@@ -49,12 +49,12 @@ class ClassConstructorBuilder extends IBuilder {
   /// Add parameter fields to the constructor.
   /// 
   /// A parameter field is represented as `Type field`.
-  void addParameters(List<Field> parameters) => this.parameters.addAll(parameters);
+  void addArguments(List<Field> arguments) => this.arguments.addAll(arguments);
 
   String get _prefix => prefix.isNotEmpty ? '$prefix ' : '';
   String get _name => name.isNotEmpty ? '.$name' : '';
   String get _super => superValue.isNotEmpty ? ' : super ($superValue)' : '';
-  String get _body => body.isNotEmpty ? ' {\n $tab$body \n}' : '';
+  String get _body => body.isNotEmpty ? ' {\n$tab$body \n}' : ';';
 
   bool get _hasUnnamedFields => fields.any((element) => !element.named);
   bool get _hasNamedFields => fields.any((element) => element.named);
@@ -62,7 +62,7 @@ class ClassConstructorBuilder extends IBuilder {
   String get _unnamedFields => fields
     .where((field) => !field.named)
     .map((e) => e.toConstructorParameter())
-    .followedBy(parameters
+    .followedBy(arguments
       .where((parameter) => !parameter.named)
       .map((e) => e.toString())
     )
@@ -72,7 +72,7 @@ class ClassConstructorBuilder extends IBuilder {
   ? (_hasUnnamedFields ? ', ' : '') + '{\n' + fields
     .where((field) => field.named)
     .map((e) => tab + e.toConstructorParameter() + ',')
-    .followedBy(parameters
+    .followedBy(arguments
       .where((parameter) => parameter.named)
       .map((e) => tab + e.toString() + ',')
     )
@@ -82,7 +82,7 @@ class ClassConstructorBuilder extends IBuilder {
 
   @override
   String build() {
-    add('$_prefix$className$_name($_unnamedFields$_namedFields)$_super$_body;');
+    add('$_prefix$className$_name($_unnamedFields$_namedFields)$_super$_body');
     return super.build();
   }
 }
