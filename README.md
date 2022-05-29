@@ -7,8 +7,8 @@ A toolkit providing builder-based library for dart code generation such as class
 ## Features
 
 - Generate classes, constructors, methods, properties with ease
-- Pre-made generation of copyWith, serialization (toMap, fromMap) and Equatable
-- Outputs everything as a simple string which you can then write to a file on your own;
+- Pre-made generation of **copyWith**, serialization (**toMap, fromMap**) and **Equatable**
+- Outputs everything as a simple string which you can then write to a file on your own
 
 Attention! This does not work with Dart's **build** package. This is a standalone library written in Dart that builds Dart code.
 
