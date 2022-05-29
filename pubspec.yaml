@@ -1,5 +1,5 @@
 name: code_generator
-description: A toolkit for dart code generation such as classes, methods, properties and constructors.
+description: Builder-based library for dart code generation such as classes, methods, properties and constructors.
 version: 1.0.0
 homepage: https://github.com/nathanielxd/dart-code-generator
 environment:

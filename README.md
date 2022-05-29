@@ -1,56 +1,36 @@
-# Dart Class Builder
+# Dart Code Generator
 
-A suite of tools that provide generation of dart code such as classes, methods, properties and constructors.
+A toolkit providing builder-based library for dart code generation such as classes, methods, properties and constructors.
+
+*"I have used Dart to create Dart"*
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-- Generate classes, constructors, methods, properties with ease;
-- Quick generation of copyWith methods, serialization (toMap, fromMap) and Equatable;
+- Generate classes, constructors, methods, properties with ease
+- Pre-made generation of copyWith, serialization (toMap, fromMap) and Equatable
 - Outputs everything as a simple string which you can then write to a file on your own;
 
-Attention! This does not work with Dart's **build** package. This is a standalone package written in Dart that builds Dart code.
+Attention! This does not work with Dart's **build** package. This is a standalone library written in Dart that builds Dart code.
 
 ## Getting started
 
 1. Add the dependency to your pubspec.yaml file
-`code_generator: any`
+```yaml
+code_generator: ^1.0.0
+```
 
 2. Build your first class
 ```dart
-void main() {
-    final builder = ClassBuilder('MyClass');
-    builder
-        ..withExtension('Equatable') // Extend the Equatable class
-        ..withCopyWith() // Build a copyWith method
-        ..addField(ClassField('String', 'name'))
-        ..addField(ClassField('int', 'age'))
-        ..withEquatable(); // Build override equatable props
+final name = Field('String', 'name', prefix: 'final');
+final age = Field('int', 'age', prefix: 'final');
+  
+final builder = ClassBuilder('Human');
+builder
+    ..buildConstructor()
+    ..buildCopyWith()
+    ..addFields(fields);
 
-    final code = builder.build();
-    print(code);
-
-    /** Output:
-
-    class MyClass extends Equatable {
-
-        final String name;
-        final int age;
-
-        MyClass copyWith({
-            String? name,
-            int? age,
-        }) => MyClass(
-            name: name ?? this.name,
-            age: age ?? this.age,
-        );
-
-        @override
-        List<Object?> get props => [name, age];
-    }
-    */
-}
+  print(builder.build());
 ```
 
 ## Usage

@@ -25,7 +25,8 @@ void main(List<String> args) {
             .where((element) => !element.nullable)
             .map((e) => '    ' + e.toEmptyParameter() + ','),
           '  );'
-        ].join('\n'))
+        ]
+        .join('\n'))
     )
     ..addFields(fields);
 
