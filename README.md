@@ -16,12 +16,12 @@ Attention! This does not work with Dart's **build** package. This is a standalon
 
 1. Add the dependency to your pubspec.yaml file
 ```yaml
-code_generator: ^1.0.0
+class_generator: ^1.0.0
 ```
 
 2. Import the dependecy in your code file
 ```dart
-import 'package:code_generator/code_generator.dart';
+import 'package:class_generator/class_generator.dart';
 ```
 
 ## Usage

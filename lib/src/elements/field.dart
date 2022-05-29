@@ -1,4 +1,4 @@
-import 'package:code_generator/code_generator.dart';
+import 'package:class_generator/class_generator.dart';
 import 'package:recase/recase.dart';
 
 class Field {

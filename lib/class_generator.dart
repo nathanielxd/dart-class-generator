@@ -1,4 +1,4 @@
-library code_generator;
+library class_generator;
 
 export 'src/elements/field.dart';
 export 'src/elements/method.dart';
