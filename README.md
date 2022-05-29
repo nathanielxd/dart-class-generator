@@ -19,7 +19,14 @@ Attention! This does not work with Dart's **build** package. This is a standalon
 code_generator: ^1.0.0
 ```
 
-2. Build your first class
+2. Import the dependecy in your code file
+```dart
+import 'package:code_generator/code_generator.dart';
+```
+
+## Usage
+
+Build your first class
 ```dart
 final name = Field('String', 'name', prefix: 'final');
 final age = Field('int', 'age', prefix: 'final');
@@ -28,22 +35,9 @@ final builder = ClassBuilder('Human');
 builder
     ..buildConstructor()
     ..buildCopyWith()
-    ..addFields(fields);
+    ..addFields([name, age]);
 
   print(builder.build());
 ```
 
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
-
 ## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
