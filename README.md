@@ -1,4 +1,4 @@
-# Dart Code Generator
+# Dart Class Generator
 
 A toolkit providing builder-based library for dart code generation such as classes, methods, properties and constructors.
 
