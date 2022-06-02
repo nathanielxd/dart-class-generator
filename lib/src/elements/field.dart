@@ -71,7 +71,7 @@ class Field {
 
     return Field(type, identifier, 
       nullable: nullable,
-      value: defaultValue,
+      //value: defaultValue,
       prefix: 'final'
     );
   }
@@ -99,6 +99,12 @@ class Field {
   }
 
   String toEmptyParameter() => identifier + ': ' + emptyValue;
+
+  /// Get this field as a class property representation.
+  /// 
+  /// Eg. `final String name;`.
+  String toModelField()
+  => _prefix + type + _null + ' ' + identifier + _equalsToValue + ';';
 
   /// Get this field as a class property representation.
   /// 
