@@ -71,7 +71,8 @@ class Field {
 
     return Field(type, identifier, 
       nullable: nullable,
-      value: defaultValue
+      value: defaultValue,
+      prefix: 'final'
     );
   }
 
