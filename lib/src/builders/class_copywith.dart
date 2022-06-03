@@ -1,11 +1,11 @@
 import 'package:class_generator/class_generator.dart';
 
-class ClassCopyWithBuilder extends IBuilder {
+class ClassCopyWith extends IBuilder {
 
   final String className;
-  final List<Field> fields;
+  List<Field> fields;
 
-  ClassCopyWithBuilder(this.className, {
+  ClassCopyWith(this.className, {
     required this.fields
   });
 

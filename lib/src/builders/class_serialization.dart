@@ -1,45 +1,41 @@
 import 'package:class_generator/class_generator.dart';
 
-class ClassSerializationBuilder extends IBuilder {
+class ClassSerialization extends IBuilder {
 
   final String className;
-  final List<Field> fields;
-  final bool buildToMap;
-  final bool buildFromMap;
-  final bool buildFromFirebaseDocument;
 
-  ClassSerializationBuilder(this.className, {
-    required this.fields,
-    this.buildToMap = true,
-    this.buildFromMap = true,
-    this.buildFromFirebaseDocument = false
-  });
+  List<Field> fields = [];
+  bool toMap = true;
+  bool fromMap = true;
+  bool fromFirebaseDocument = false;
+
+  ClassSerialization(this.className, {required this.fields});
 
   String get _toMapFields => fields
-    .map((e) => '\n' + tab + "'${e.identifier}': ${e.toMapParameter()}")
+    .map((e) => '\n' + tab + "'${e.identifier}': ${e.buildToMap()}")
     .join(',');
 
   String get _fromMapFields => fields
-    .map((e) => '\n' + tab + """${e.identifier}: ${e.toFromMapParameter("map['${e.identifier}']")}""")
+    .map((e) => '\n' + tab + """${e.identifier}: ${e.buildFromMap("map['${e.identifier}']")}""")
     .join(',');
 
   @override
   String build() {
-    if(buildToMap) {
+    if(toMap) {
       add('Map<String, dynamic> toMap() => {$_toMapFields');
       add('};');
     }
 
-    if(buildToMap && buildFromMap) {
+    if(toMap && fromMap) {
       newLine();
     }
 
-    if(buildFromMap) {
+    if(fromMap) {
       add('factory $className.fromMap(Map<String, dynamic> map)');
       add('=> $className($_fromMapFields');
       add(');');
 
-      if(buildFromFirebaseDocument) {
+      if(fromFirebaseDocument) {
         newLine();
         add('factory $className.fromDocument(DocumentSnapshot<Map<String, dynamic>> snapshot)');
         add('=> $className.fromMap(snapshot.data()!).copyWith(id: snapshot.id);');

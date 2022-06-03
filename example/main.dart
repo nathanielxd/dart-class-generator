@@ -1,35 +1,23 @@
-import 'dart:io';
-
 import 'package:class_generator/class_generator.dart';
 
 void main(List<String> args) {
 
-  final firstName = Field('String', 'firstName', prefix: 'final');
-  final lastName = Field('String', 'lastName', prefix: 'final');
-  final status = Field('bool', 'loading', prefix: 'final');
-  final errorMessage = Field('String', 'errorMessage', prefix: 'final', nullable: true);
+  var fields = [
+    Field('String', 'firstName'),
+    Field('int', 'age'),
+    Field('List<String>', 'address')
+  ];
 
-  final fields = [firstName, lastName, status, errorMessage];
-  
-  final builder = ClassBuilder('ProfileCreationState');
-  builder
-    ..buildConstructor()
-    ..buildCopyWith()
-    ..addConstructor(
-      ConstructorBuilder('ProfileCreationState')
-        ..withName('pure')
-        ..withPrefix('factory')
-        ..withBody([
-          'return ProfileCreationState(',
-          ...fields
-            .where((element) => !element.nullable)
-            .map((e) => '    ' + e.toEmptyParameter() + ','),
-          '  );'
-        ]
-        .join('\n'))
-    )
-    ..addFields(fields);
+  final model = ClassBuilder('Human')
+    ..constructor = true
+    ..copyWith = true
+    ..toMap = true
+    ..fromMap = true
+    ..empty = true
+    ..equatable = true
+    ..fields.addAll(fields.map((e) => e
+      ..modifier = 'final'
+    ));
 
-  print(builder.build());
-  File(Directory.current.path + '/example/output.dart').writeAsStringSync(builder.build());
+  print(model.build());
 }

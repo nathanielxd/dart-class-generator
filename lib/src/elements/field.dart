@@ -1,17 +1,31 @@
-import 'package:class_generator/class_generator.dart';
 import 'package:recase/recase.dart';
 
 class Field {
 
   /// The data type of the variable. Eg. `String`, `int`, `Object`.
-  final String type;
+  String type;
   /// The identifier of the variable. Eg. `myVar` as in `String myVar`.
-  final String identifier;
+  String identifier;
+
   /// Whether this variable is nullable or not. A nullable variable will 
   /// be represented by appending a `?` at the end of its type.
   /// 
   /// Eg. `String? myVar`.
-  final bool nullable;
+  bool nullable = false;
+  /// Whether this field should be prefixed with `static`.
+  bool static = false;
+  /// Whether this field should be prefixed with `late`.
+  bool late = false;
+  /// The modifier of this field. Eg. `final`, `var`, 'const`.
+  String? modifier;
+  /// The default value of the field. A field with an assignment will be
+  /// represented as such `myVar = defaultValue`.
+  String? assignment;
+  /// The annotations of the field. Eg. `override` will be represented as `@override`
+  /// inserted above the field declaration.
+  String? annotations;
+
+  /*
   /// Whether this field must be treated as a named or unnamed parameter when
   /// representing it in a constructor.
   /// 
@@ -22,16 +36,12 @@ class Field {
   /// The default value of the field. A field with a default value will be
   /// represented as such `myVar = defaultValue`.
   final String? value;
+  */
 
   /// Create a new field. A field is a property of a class.
   /// 
   /// Eg. `static const myVar = 5` is a field, `String myVar` is a field.
-  const Field(this.type, this.identifier, {
-    this.nullable = false,
-    this.named = true,
-    this.prefix,
-    this.value,
-  });
+  Field(this.type, this.identifier);
   
   /// Retrieve a field from a key-value pair. This allows you to get fields from 
   /// configuration .yaml files.
@@ -45,8 +55,8 @@ class Field {
   /// print(field.nullable) // true
   /// ```
   /// 
-  /// If the type is exactly "**input**" then we will treat it as an input form (useful for the Formz package)
-  /// and the resulting Field's type will be `IdentifierInput`.
+  /// If the type is exactly "**input**" then it will treat it as an input form (useful for the Formz package)
+  /// and the resulting Field's type will be of form ``$IdentifierInput`.
   factory Field.fromEntry(MapEntry<String, String> entry) {
     /// Field's identifier is the key of the key-value entry.
     final identifier = entry.key;
@@ -64,27 +74,37 @@ class Field {
     ? ReCase(entry.key).pascalCase + 'Input' 
     : actualType;
 
-    // The default value is '.pure()' if the field is an input.
-    final defaultValue = actualType == 'input'
-    ? '$type.pure()'
-    : (!nullable ? Utils.getDefaultValueOf(type) : '');
+    final field = Field(type, identifier);
+    field
+      ..nullable = nullable
+      ..modifier = 'final';
 
-    return Field(type, identifier, 
-      nullable: nullable,
-      //value: defaultValue,
-      prefix: 'final'
-    );
+    return field;
   }
 
+  String get _type => type.isNotEmpty ? '$type ' : '';
   String get _null => nullable ? '?' : '';
   String get _identifier => identifier + _null;
-  String get _prefix => prefix != null ? '$prefix ' : '';
-  String get _equalsToValue => value != null ? ' = $value' : '';
+  String get _prefix => 
+    (static ? 'static ' : '') + 
+    (late ? 'late ' : '') + 
+    (modifier != null ? '$modifier ' : '');
+  String get _equalsToValue => assignment != null ? ' = $assignment' : '';
+  String get _annotations => annotations != null ? '@$annotations\n' : '';
 
-  @override
-  String toString() => type + _null + ' ' + identifier + _equalsToValue;
+  /// Get this field as a class property representation.
+  /// 
+  /// Eg. `final String name;`.
+  String build() {
+    return _annotations + _prefix + _type + _identifier + _equalsToValue + ';';
+  }
 
-  String get emptyValue {
+  /// Get an empty representation of this field.
+  /// 
+  /// If the field is a [List], this will return `[]`. 
+  /// booleans return `false`, number types return `0` and 
+  /// custom objects return `$object.empty`.
+  String get empty {
     if(type.startsWith('List')) {
       return '[]';
     }
@@ -98,54 +118,12 @@ class Field {
     }
   }
 
-  String toEmptyParameter() => identifier + ': ' + emptyValue;
-
-  /// Get this field as a class property representation.
-  /// 
-  /// Eg. `final String name;`.
-  String toModelField()
-  => _prefix + type + _null + ' ' + identifier + _equalsToValue + ';';
-
-  /// Get this field as a class property representation.
-  /// 
-  /// Eg. `final String name;` or `static const String name = 'Mark';`
-  String toClassField()
-  => _prefix + type + _null + ' ' + identifier + _equalsToValue + ';';
-
-  /// Get this field as a class constructor parameter representation. 
-  /// 
-  /// Eg. `this.field`.
-  /// 
-  /// If field has a [value], it will be the default value the paramater takes: `this.field = defaultValue`.
-  /// 
-  /// If field is nullable and named, it will not be marked as `required`.
-  /// ```
-  /// // Usage in a ClassConstructorBuilder.
-  /// Constructor(this.myField);
-  /// Constructor([this.myField = defaultValue]);
-  /// Constructor({
-  ///   required this.myField,
-  ///   this.myField = defaultValue,
-  ///   this.myField
-  /// });
-  /// ```
-  String toConstructorParameter() {
-    if(named) {
-      return (!nullable && value == null ? 'required ' : '')
-        + 'this.$identifier'
-        +  _equalsToValue;
-    }
-    else {
-      return 'this.$identifier' + _equalsToValue;
-    }
-  }
-
   /// Get this field as a "to map" parameter representation.
   /// 
   /// Eg. field `DateTime? x` will be represented as `x?.millisecondsSinceEpoch`.
   /// 
   /// Eg. field `String x` will be represented as `x`.
-  String toMapParameter() {
+  String buildToMap() {
     if(type.startsWith('Map')) {
       return identifier;
     }
@@ -153,7 +131,7 @@ class Field {
     if(type.startsWith('List')) {
       final child = Field.fromEntry(
         MapEntry('x', type.substring(5, type.length - 1))
-      ).toMapParameter();
+      ).buildToMap();
 
       return _identifier + '.map(($identifier) => $child).toList()';
     }
@@ -183,11 +161,11 @@ class Field {
   /// Eg. field `String? x` will be represented as `[value] != null ? [value] : null`.
   /// 
   /// Where [value] is usually `map['foo']`.
-  String toFromMapParameter(String value) {
+  String buildFromMap(String value) {
     if(type.startsWith('List')) {
       final child = Field.fromEntry(
         MapEntry('x', type.substring(5, type.length - 1))
-      ).toFromMapParameter('x');
+      ).buildFromMap('x');
 
       return "$type.from(map['$identifier']?.map((x) => $child))";
     }
@@ -198,9 +176,7 @@ class Field {
       case 'double':
       case 'num':
       case 'String':
-        return nullable
-        ? '$value != null ? $value : null'
-        : value;
+        return nullable ? '$value != null ? $value : null' : value;
       case 'DateTime':
         return nullable
         ? '$value != null ? DateTime.fromMillisecondsSinceEpoch($value) : null'
@@ -213,4 +189,7 @@ class Field {
         return "$type.fromMap($value)";
     }
   }
+
+  @override
+  String toString() => build();
 }
