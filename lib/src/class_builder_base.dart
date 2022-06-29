@@ -28,7 +28,7 @@ class ClassBuilder extends IBuilder {
 
   ClassBuilder(this.className);
 
-  String get _abstract => abstract ? 'abstract' : '';
+  String get _abstract => abstract ? 'abstract ' : '';
   String get _extension => extend != null ? ' extends $extend' : '';
   String get _implementation => implements != null ? ' implements $implements' : '';
   String get _header => _abstract + 'class $className' + (equatable ? ' extends Equatable' : _extension + _implementation);
@@ -55,18 +55,24 @@ class ClassBuilder extends IBuilder {
 
   String get _equatable 
   => '\n' + tab + '@override' 
-  + '\n' + tab + 'List<Object?> get props => [${fields.map((e) => e.identifier).join(', ')}];';
+  + '\n' + tab + 'List<Object?> get props => [${fields.map((e) => e.identifier).join(fields.length < 5 ? ', ' : ',\n')}];';
 
   @override
   String build() {
     add(_header + ' {');
-    newLine();
-    add(_classFields);
+
+    if(fields.isNotEmpty) {
+      newLine();
+      add(_classFields);
+    }
 
     if(constructor) {
-      constructors.add(
+      constructors.insert(0, 
         Constructor(className)
-          ..parameters = fields.map((e) => Parameter.fromField(e)).toList()
+          ..parameters = fields.map((e) 
+            => Parameter.fromField(e)
+              ..required = !e.nullable
+            ).toList()
           ..constant = true
       );
     }

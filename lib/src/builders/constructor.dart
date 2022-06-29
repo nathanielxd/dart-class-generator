@@ -26,9 +26,9 @@ class Constructor extends IBuilder {
   String get _prefix => 
     (constant ? 'const ' : '') + 
     (factory ? 'factory ': '');
-  String get _name => name != null ? name! : '';
+  String get _name => name != null ? '.${name!}' : '';
   String get _super => superCode != null ? ' : super ($superCode)' : '';
-  String get _body => body != null ? ' {\n$tab$body \n}' : ';';
+  String get _body => body != null ? ' {\n$body \n}' : ';';
 
   bool get _hasUnnamedParameters => parameters.any((element) => !element.named);
   bool get _hasNamedParameters => parameters.any((element) => element.named);

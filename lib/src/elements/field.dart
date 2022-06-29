@@ -82,8 +82,8 @@ class Field {
     return field;
   }
 
-  String get _type => type.isNotEmpty ? '$type ' : '';
   String get _null => nullable ? '?' : '';
+  String get _type => type.isNotEmpty ? '$type$_null ' : '';
   String get _identifier => identifier + _null;
   String get _prefix => 
     (static ? 'static ' : '') + 
@@ -96,7 +96,7 @@ class Field {
   /// 
   /// Eg. `final String name;`.
   String build() {
-    return _annotations + _prefix + _type + _identifier + _equalsToValue + ';';
+    return _annotations + _prefix + _type + identifier + _equalsToValue + ';';
   }
 
   /// Get an empty representation of this field.

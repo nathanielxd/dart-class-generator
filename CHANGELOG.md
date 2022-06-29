@@ -9,3 +9,7 @@
 ## 2.0.0
 
 - Revamped whole builder pattern
+
+## 2.0.1
+
+- Fixed small bug regarding abstract classes

@@ -1,6 +1,6 @@
 name: class_generator
 description: Builder-based library for dart code generation such as classes, methods, properties and constructors.
-version: 2.0.0
+version: 2.0.1
 homepage: https://github.com/nathanielxd/dart-class-generator
 environment:
   sdk: '>=2.15.0 <3.0.0'

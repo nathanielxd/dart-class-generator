@@ -21,6 +21,8 @@ class Method {
   /// 
   /// Eg. `String myMethod() async {...}`.
   String? modifier;
+  /// Optional annotation of this method. Eg. `override`.
+  String? annotations;
   /// Documentation comment of this method.
   String? docs;
 
@@ -35,7 +37,8 @@ class Method {
   String get _get => getter ? 'get ' : '';
   String get _modifier => modifier != null ? ' $modifier' : '';
   String get _body => body != null ? (_hasSinglelineBody ? ' => $body' : ' {\n  ${body!.split('\n').join('\n  ')}\n}') : ';';
-  String get _docs => docs != null ? '/// $docs \n' : '';
+  String get _annotations => annotations != null ? '@$annotations\n' : '';
+  String get _docs => docs != null ? '/// $docs\n' : '';
 
   String get _unnamedParameters => parameters
     .where((parameter) => !parameter.named)
@@ -52,7 +55,7 @@ class Method {
 
   String get _arguments => !getter ? '($_unnamedParameters$_namedParameters)' : '';
 
-  String build() => _docs + _type + _get + name + _arguments + _modifier + _body;
+  String build() => _annotations + _docs + _type + _get + name + _arguments + _modifier + _body;
 
   @override
   String toString() => build();

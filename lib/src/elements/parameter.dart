@@ -81,7 +81,7 @@ class Parameter {
   String get _null => nullable ? '?' : '';
   String get _identifier => identifier + _null;
   String get _required => required ? 'required ' : '';
-  String get _this => toThis ? 'this.' : '$type ';
+  String get _this => toThis ? 'this.' : '$type$_null ';
   String get _default => defaultTo != null ? ' = $defaultTo' : '';
 
   String build() {
@@ -147,16 +147,20 @@ class Parameter {
         MapEntry('x', type.substring(5, type.length - 1))
       ).buildFromMap('x');
 
-      return "$type.from(map['$identifier']?.map((x) => $child))";
+      return "$type.from((map['$identifier'] as List).map((x) => $child))";
     }
 
     switch(type) {
       case 'bool':
+        return nullable ? '$value != null ? $value as bool : null' : value;
       case 'int':
+        return nullable ? '$value != null ? $value as int : null' : value;
       case 'double':
+        return nullable ? '$value != null ? $value as double : null' : value;
       case 'num':
+        return nullable ? '$value != null ? $value as num : null' : value;
       case 'String':
-        return nullable ? '$value != null ? $value : null' : value;
+        return nullable ? '$value != null ? $value as String : null' : value;
       case 'DateTime':
         return nullable
         ? '$value != null ? DateTime.fromMillisecondsSinceEpoch($value) : null'
@@ -166,7 +170,7 @@ class Parameter {
         ? '$value != null ? Duration(milliseconds: $value) : null'
         : 'Duration(milliseconds: $value)';
       default:
-        return "$type.fromMap($value)";
+        return nullable ? "$value != null ? $type.fromMap($value) : null" : "$type.fromMap($value)";
     }
   }
 
